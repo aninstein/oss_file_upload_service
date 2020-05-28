@@ -1,0 +1,2 @@
+# oss_file_upload_service
+基于阿里云oss静态对象存储sdk的文件上传服务，能够实现断点续传、分片上传、追加上传
