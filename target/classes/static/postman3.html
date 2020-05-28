@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>分片上传演示</title>
+    <script src="js/jquery.min.js" type="text/javascript"></script>
+    <script src="js/postman3.js" type="text/javascript"></script>
+</head>
+<body>
+
+<div>
+    <div style="float:right;width:20em;">
+        <h3>测试流程</h3>
+        <p>1、先选择4个分片文件（建议用txt）,除了最后一个分片之外每个分片不能小于100KB。</p>
+        <p>2、“请求方式”选择“获取uploadId”,点击“点击获取uploadId”，等出现“有值”后算是获得了uploadId</p>
+        <p>3、“请求方式”选择“分片上传”,点击“全部上传”，四个文件后面都出现成功之后，查看底下的partEtag是否都有值</p>
+        <p>4、“请求方式”选择“分片合成”,点击“合成上传”，等出现链接和“成功”，证明合成成功。</p>
+    </div>
+    <h3>选择分片*注意除了最后一个分片其他分片都要大于100KB</h3>
+    <p>
+    <form method="POST" enctype="multipart/form-data" name="dataForm" id="dataForm1">
+        Key:<input type="text" name="Key" id="Key1" value="a-casual-name/andon/upload/1234.txt"/>&nbsp;&nbsp;&nbsp;&nbsp;
+        uploadId：<input type="hidden" name="fileId" id="fileId1"/><span id="spid1" style="color: greenyellow"></span>
+        Part#：<input type="number" name="partNo" id="partNo1" value=1/>
+        partCount：<input type="number" name="partCount" value=4/>
+        file：<input type="file" name="file" id="file1"/>
+        <span id="sp1" style="color: greenyellow"></span>
+    </form>
+    <hr>
+    <form method="POST" enctype="multipart/form-data" name="dataForm" id="dataForm2">
+        Key:<input type="text" name="Key" id="Key2" value="a-casual-name/andon/upload/1234.txt"/>&nbsp;&nbsp;&nbsp;&nbsp;
+        uploadId：<input type="hidden" name="fileId" id="fileId2"/><span id="spid2" style="color: greenyellow"></span>
+        Part#：<input type="number" name="partNo" id="partNo2" value=2/>
+        partCount：<input type="number" name="partCount" value=4/>
+        file：<input type="file" name="file" id="file2"/>
+        <span id="sp2" style="color: greenyellow"></span>
+    </form>
+    <hr>
+    <form method="POST" enctype="multipart/form-data" name="dataForm" id="dataForm3">
+        Key:<input type="text" name="Key" id="Key3" value="a-casual-name/andon/upload/1234.txt"/>&nbsp;&nbsp;&nbsp;&nbsp;
+        uploadId：<input type="hidden" name="fileId" id="fileId3"/><span id="spid3" style="color: greenyellow"></span>
+        Part#：<input type="number" name="partNo" id="partNo3" value=3/>
+        partCount：<input type="number" name="partCount" value=4/>
+        file：<input type="file" name="file" id="file3"/>
+        <span id="sp3" style="color: greenyellow"></span>
+    </form>
+    <hr>
+    <form method="POST" enctype="multipart/form-data" name="dataForm" id="dataForm4">
+        Key:<input type="text" name="Key" id="Key4" value="a-casual-name/andon/upload/1234.txt"/>&nbsp;&nbsp;&nbsp;&nbsp;
+        uploadId：<input type="hidden" name="fileId" id="fileId4"/><span id="spid4" style="color: greenyellow"></span>
+        Part#：<input type="number" name="partNo" id="partNo4" value=4/>
+        partCount：<input type="number" name="partCount" value=4/>
+        file：<input type="file" name="file" id="file4"/>
+        <span id="sp4" style="color: greenyellow"></span>
+    </form>
+    <hr>
+</div>
+
+<!--文件名、路径、服务名称的修改-->
+<div id="theCompleteFile">
+    <h3>文件名</h3>
+    serviceName：<input type="text" name="completeserviceName" id="completeserviceName" value="a-casual-name"/>&nbsp;*注意必须与上面的分片的serviceName一致
+    <br>
+    path：<input type="text" name="completePath" id="completePath" value="andon/upload"/>&nbsp;*注意必须与上面的分片的Path一致
+    <br>
+    Upload FileName：<input type="text" name="theCompleteFileName" id="theCompleteFileName" placeholder="请输入一个文件名"
+                           value="1234.txt">
+    <br>
+    <input type="button" name="ready" id="ready" value="确认修改"/>
+</div>
+<hr>
+<div>
+    <h3>请求方式</h3>
+    URL:<input type="text" name="httpHeader" id="httpHeader" value="http://localhost:8080/"/>
+    <select id="selMethod">
+        <option value="uploadFiles">普通上传</option>
+        <option value="appendFiles">追加上传</option>
+        <option value="uploadFileWithBadNetwork">断点续传</option>
+        <option value="createUploadId">生成uploadId</option>
+        <option value="sliceUploadFile">分片上传</option>
+        <option value="completePart">分片整合</option>
+        <option value="cancelPart">取消上传</option>
+    </select>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    The URL is:<input type="text" id="displayUrl" name="displayUrl"/>
+    <hr>
+</div>
+<div style="margin: auto;">
+    <div style="float: left;margin: auto 1em;">
+        <!--获取uploadId-->
+        <h3>获取uploadId</h3>
+        <input type="button" name="createUploadId" id="createUploadId" value="点击获取uploadId"/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <span id="sp_UploadId" style="color: greenyellow"></span>
+    </div>
+    <!--全部上传-->
+    <div style="float: left;margin: auto 1em;">
+        <h3>全部上传</h3>
+        <p><input id="btnRequest" type="button" value="全部上传"/></p>
+        <span id="sp_Upload" style="color: greenyellow"></span>
+    </div>
+    <!--取消上传-->
+    <div style="float: left;margin: auto 1em;">
+        <h3>取消上传</h3>
+        <input id="cancelRequest" type="button" value="取消上传"/>
+        <span id="sp_cancel" style="color: greenyellow"></span>
+    </div>
+</div>
+
+<!--取消浮动影响-->
+<div style="clear: both"></div>
+
+<hr>
+<div>
+    <div style="float: left;margin: auto 1em;">
+        <!--整合上传-->
+        <h3>整合上传</h3>
+        <form method="POST" enctype="multipart/form-data" name="dataFormComplete" id="dataFormComplete">
+            partEtags1:<input type="text" name="partEtag" id="partEtag1" style="width: 50em;"/><br>
+            partEtags2:<input type="text" name="partEtag" id="partEtag2" style="width: 50em;"/><br>
+            partEtags3:<input type="text" name="partEtag" id="partEtag3" style="width: 50em;"/><br>
+            partEtags4:<input type="text" name="partEtag" id="partEtag4" style="width: 50em;"/><br>
+            Key:<input type="text" name="Key" id="Key" value="a-casual-name/andon/upload/1234.txt"/>&nbsp;&nbsp;&nbsp;&nbsp;
+            uploadId:<input type="text" name="uploadId" id="uploadId"/><br>
+            fileName：<input type="text" name="completeName" id="completeName" value="1234"/>&nbsp;&nbsp;&nbsp;&nbsp;
+            ext：<input type="text" name="completeext" id="completeext" value=".txt"/>
+            partCount：<input type="number" name="partCount" id="partCount" value=4/><br>
+            <input id="completeUpload" type="button" value="整合上传"/><span id="success" style="color: greenyellow"></span>
+            <a id="completeView" target="_blank" href="javascript:void(0)">link</a>
+        </form>
+    </div>
+    <div style="float: left;margin: auto 1em;">
+        <h3><s>获取已上传分片列表</s></h3>
+        <input type="button" id="getpartsuccess" value="点击获取"/>
+    </div>
+    <div style="float: left;margin: auto 1em;">
+        <h3><s>获取全部分片列表</s></h3>
+        <input type="button" id="getallpart" value="点击获取"/>
+    </div>
+</div>
+
+<div style="clear: both"></div>
+<hr>
+<div>
+    <!--消息返回内容-->
+    ResponseBody:<br>
+    <textarea id="txtResponseBody" cols="50" rows="6"></textarea>
+    <br>
+    <br>
+</div>
+</body>
+</html>

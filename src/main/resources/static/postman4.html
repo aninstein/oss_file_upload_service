@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>分片上传</title>
+</head>
+<body>
+<form method="POST" enctype="multipart/form-data" id="dataForm" action="sliceUploadFileTest">
+    <p>serviceName：<input type="text" name="serviceName" id="serviceName"/></p>
+    <p>path：<input type="text" name="path" id="path"/></p>
+    <p>fileName：<input type="text" name="fileName" id="fileName"/></p>
+    <p>ext：<input type="text" name="ext" id="ext"/></p>
+    <p>file：<input type="file" name="file" id="file"/></p>
+    <p><input id="btnRequest" type="button" value="上传"/></p>
+</form>
+ResponseBody:<br>
+<textarea id="txtResponseBody" cols="50" rows="6"></textarea>
+<br>
+<br>
+<a id="viewLink" target="_blank" href="">link</a>
+</body>
+<script src="js/jquery.min.js" type="text/javascript"></script>
+<script>
+    $(function () {
+        $(document).on('change','#file',function () {
+            var file = $("#file").val();
+
+            /*获取文件名部分*/
+            var strFileName=file.replace(/^.+?\\([^\\]+?)(\.[^\.\\]*?)?$/gi,"$1");  //正则表达式获取文件名，不带后缀
+            var FileExt="."+file.replace(/.+\./,"");   //正则表达式获取后缀
+
+            $("#serviceName").val("a-casual-name")
+            $("#path").val("andon/upload");
+            $("#fileName").val(strFileName);
+            $("#ext").val(FileExt);
+        });
+
+        $("#btnRequest").click(function () {
+            var formData = new FormData($("#dataForm")[0]);
+            $.ajax({
+                type: $("#dataForm").attr("method"),
+                url: $("#dataForm").attr("action"),
+                data: formData,
+                contentType: false,
+                processData: false,
+                complete: function (e, xhr, settings) {
+                    var result = JSON.parse(e.responseText);
+                    $("#txtResponseBody").val(e.responseText);
+                    if (e.status === 200) {
+                        $("#viewLink").attr("href", result.filePath);
+                        $("#viewLink").html(result.filePath)
+                    } else {
+                        alert(e.status);
+                    }
+                }
+            });
+        });
+    });
+</script>
+</html>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.file_upload_service.mapper.TableColumnsMapper">
+    <select id="selectAll" parameterType="String" resultType="TableColumns">
+        DESC ${tableName};
+    </select>
+    <select id="selectIndex" parameterType="String" resultType="TableIndexs">
+        show index from ${tableName};
+    </select>
+</mapper>
